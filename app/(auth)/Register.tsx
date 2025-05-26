@@ -7,9 +7,30 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import colors from "../../data/styling/colors";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "@/api/auth";
+import { router } from "expo-router";
 const Register = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [image, setImage] = useState("");
+  const getUserObj = () => {
+    return {
+      email: email,
+      password: password,
+    };
+  };
+
+  const mregister = useMutation({
+    mutationKey: ["register"],
+    mutationFn: () => register(getUserObj(), image),
+    onSuccess: () => {
+      router.navigate("/Login");
+    },
+  });
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -46,6 +67,8 @@ const Register = () => {
               borderRadius: 5,
               marginTop: 20,
             }}
+            value={email}
+            onChangeText={setEmail}
             placeholder="Email"
           />
 
@@ -56,6 +79,8 @@ const Register = () => {
               borderRadius: 5,
               marginTop: 20,
             }}
+            value={password}
+            onChangeText={setPassword}
             placeholder="Password"
           />
 
@@ -73,6 +98,7 @@ const Register = () => {
               marginTop: 20,
               alignItems: "center",
             }}
+            onPress={() => mregister.mutate()}
           >
             <Text
               style={{
