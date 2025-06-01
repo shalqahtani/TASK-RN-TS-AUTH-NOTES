@@ -7,10 +7,29 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import colors from "../../data/styling/colors";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "@/api/auth";
+import { router } from "expo-router";
 
 const Index = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const getUserObj = () => {
+    return {
+      email: email,
+      password: password,
+    };
+  };
+
+  const mlogin = useMutation({
+    mutationKey: ["login"],
+    mutationFn: () => login(getUserObj()),
+    onSuccess: () => {
+      router.navigate("/");
+    },
+  });
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -38,6 +57,8 @@ const Index = () => {
               marginTop: 20,
             }}
             placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
           />
 
           <TextInput
@@ -48,6 +69,8 @@ const Index = () => {
               marginTop: 20,
             }}
             placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
           />
 
           <TouchableOpacity
@@ -58,7 +81,7 @@ const Index = () => {
               marginTop: 20,
               alignItems: "center",
             }}
-            onPress={() => {}}
+            onPress={() => mlogin.mutate()}
           >
             <Text
               style={{
